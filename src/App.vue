@@ -2,7 +2,11 @@
   <div id="app">
     <todo-header></todo-header>
     <search @searchTodo="searchTodo"></search>
-    <todo-list :data="data" @removeTodo="removeTodo"></todo-list>
+    <todo-list 
+      :data="data" 
+      @removeTodo="removeTodo"        
+      @addTag="addTag"
+      @delTag="delTag"></todo-list>
     <add-todo @addTodo="addTodo"></add-todo>
     <pagination :paging="currentPaging" @goPage="goPage"></pagination>
   </div>
@@ -36,6 +40,30 @@ export default {
     }
   },
   methods: {
+    addTag(data) {
+      this.$axios.put('http://localhost:8081/api/todo/ref/reg/' + data.idx, {
+        'refTodoIdxList' : data.addIdx
+      }, { headers: {
+        'Content-Type': 'application/json'
+      }}).then(res => {
+        const idx = this.$_.findIndex(this.data, item => item.idx == res.data.idx);
+        this.$set(this.data, idx, res.data);
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+    delTag(data) {
+      this.$axios.put('http://localhost:8081/api/todo/ref/del/' + data.idx, {
+        'refTodoIdxList' : data.delIdx
+      }, { headers: {
+        'Content-Type': 'application/json'
+      }}).then(res => {
+        const idx = this.$_.findIndex(this.data, item => item.idx == res.data.idx);
+        this.$set(this.data, idx, res.data);
+      }).catch(err => {
+        console.log(err);
+      })
+    },
     addTodo(content) {
       this.$axios.post('http://localhost:8081/api/todo', {
         content: content
@@ -75,6 +103,7 @@ export default {
         console.log(err);
       })
     },
+
     searchTodo(condition) {
       this.schParams = {};
       this.condition = {};

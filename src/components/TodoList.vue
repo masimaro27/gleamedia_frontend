@@ -1,6 +1,10 @@
 <template>
     <div>
-        <todo-item v-for="todoItem in data" :key="todoItem.idx" :data="todoItem" @removeTodo="removeTodo"/>
+        <todo-item v-for="todoItem in data" :key="todoItem.idx" :data="todoItem" 
+            @removeTodo="removeTodo"
+            @addTag="addTag"
+            @delTag="delTag"
+            />
     </div>
 </template>
 
@@ -18,7 +22,14 @@
             removeTodo(todoIdx) {
                 // this.$emit('removeTodo', todoItem, index);
                 this.$emit('removeTodo', todoIdx);
+            },
+            addTag(idxList) {
+                this.$emit('addTag', idxList);
+            },
+            delTag(idxList) {
+                this.$emit('delTag', idxList);
             }
+
         },
     }
 </script>

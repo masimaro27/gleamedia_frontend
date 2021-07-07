@@ -15,8 +15,20 @@
         </div>
         <div class="content-bottom-wrap">
             <span class="ref-span">tag</span>
-            <div class="ref-tag">
+            <div class="ref-tag" v-if="!showAddTagBox || !showDelTagBox">
                 <span>{{refIdxs}}</span>
+            </div>
+            <div class="ref-tag" v-if="showAddTagBox">
+                <input type="text" v-model="addTagIdx" />
+            </div>
+            <div class="ref-tag" v-if="showDelTagBox">
+                <input type="text" v-model="delTagIdx" />
+            </div>
+            <input v-if="!showAddTagBox && !showDelTagBox" type="button" @click="addTagBox()" value="태그추가"/>
+            <input v-if="showAddTagBox" type="button" @click="addTag(data.idx)" value="저장1"/>
+            <input v-if="!showDelTagBox && !showAddTagBox" type="button" @click="delTagBox()" value="태그삭제"/>
+            <input v-if="showDelTagBox" type="button" @click="delTag(data.idx)" value="저장2"/>
+            <div>
             </div>
         </div>
     </div>
@@ -27,6 +39,10 @@
         props: ['data'],
         data() {
             return {
+               showAddTagBox: false, 
+               showDelTagBox: false,
+               addTagIdx: '',
+               delTagIdx: '',
             }
         },
         computed: {
@@ -35,7 +51,6 @@
                 if (this.data.emptyRef) {
                     return '-'
                 }
-
                 return this.$_
                             .chain(this.data.ref)
                             .map(item => "@" + item.idx)
@@ -43,6 +58,37 @@
             }
         },
         methods: {
+            addTagBox() {
+                this.showAddTagBox = !this.showAddTagBox;
+            },
+            delTagBox() {
+                this.showDelTagBox = !this.showDelTagBox;
+            },
+            addTag(idx) {
+                if (!this.addTagIdx) {
+                    alert('추가할 태그번호를 입력하세요.');
+                    return;
+                }
+            
+                const obj = {
+                    'idx': idx,
+                    'addIdx': this.$_.split(this.addTagIdx, ',')
+                }
+                this.$emit('addTag', obj);
+                this.showAddTagBox = !this.showAddTagBox;
+            },
+            delTag(idx) {
+                const obj = {
+                    'idx': idx,
+                    'delIdx': this.$_.split(this.delTagIdx, ',')
+                }
+                if (!this.delTagIdx) {
+                    alert('삭제할 태그번호를 입력하세요.');
+                    return;
+                }
+                this.$emit('delTag', obj);
+                this.showDelTagBox = !this.showDelTagBox;
+            },
             toggle(data) {
                 data.completed = !data.completed
                 if (data.completed) {
